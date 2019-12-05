@@ -1,20 +1,18 @@
 package com.mygoproject;
 
-public class Stone {
-	
+public class Breath {
 	private int x;
 	private int y;
-		
-	public Stone(int x, int y) {
+	
+	public Breath(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
-
 	public int getX() {
-		return x;
+		return this.x;
 	}
-
+	
 	public int getY() {
-		return y;
+		return this.y;
 	}
 }

@@ -2,8 +2,9 @@ package com.mygoproject;
 
 public class Intersection {
 	
+	/*
 	enum States { FREE, BLACK, WHITE; }
-	States s = States.FREE;
+	private States s = States.FREE;
 	
 	public void changeState(String state) {
 		if(state.equals("free")) {
@@ -14,4 +15,26 @@ public class Intersection {
 			s = States.WHITE;
 		}
 	}
+	
+	public States getState() {
+		return s;
+	}
+	*/
+	
+	private String state = "free";
+	
+	public void changeState(String state) {
+		if(state.equals("free")) {
+			this.state = state;
+		} else if(state.equals("black")) {
+			this.state = state;
+		} else if(state.equals("white")) {
+			this.state = state;
+		}
+	}
+	
+	public String getState() {
+		return this.state;
+	}
+	
 }
