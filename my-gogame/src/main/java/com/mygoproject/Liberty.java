@@ -1,10 +1,10 @@
 package com.mygoproject;
 
-public class Breath {
+public class Liberty {
 	private int x;
 	private int y;
 	
-	public Breath(int x, int y) {
+	public Liberty(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}

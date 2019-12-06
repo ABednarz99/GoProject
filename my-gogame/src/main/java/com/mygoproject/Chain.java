@@ -4,12 +4,13 @@ import java.util.ArrayList;
 
 public class Chain {
 
-	private Chains chains;
+	private Manager manager;
 	private ArrayList<Stone> listOfStones;
 	private String color;
+	private int eyes = 0;
 
-	public Chain(Chains chains, String color, int x, int y) {
-		this.chains = chains;
+	public Chain(Manager manager, String color, int x, int y) {
+		this.manager = manager;
 		this.color = color;
 		listOfStones = new ArrayList<Stone>();
 		addStone(x, y);
@@ -19,51 +20,51 @@ public class Chain {
 		listOfStones.add(new Stone(x, y));
 	}
 
-	public int getCountBreaths() {
-		ArrayList<Breath> breaths = new ArrayList<Breath>();
+	public int countLiberties() {
+		ArrayList<Liberty> liberties = new ArrayList<Liberty>();
 		int x;
 		int y;
 		for(int i = 0; i < listOfStones.size(); i++) {
 			x = listOfStones.get(i).getX();
 			y = listOfStones.get(i).getY();
-			if(chains.getStateOfIntersection(x + 1, y).equals("free")) {
-				for(int k = 0; k < breaths.size(); k++) {
-					if(breaths.get(k).getX() == x + 1 && breaths.get(k).getY() == y)
+			if(manager.getIntersectionState(x + 1, y).equals("free")) {
+				for(int k = 0; k < liberties.size(); k++) {
+					if(liberties.get(k).getX() == x + 1 && liberties.get(k).getY() == y)
 						break;
-					if(k == breaths.size() - 1)
-						breaths.add(new Breath(x + 1, y));
+					if(k == liberties.size() - 1)
+						liberties.add(new Liberty(x + 1, y));
 					k++;
 				}
 			}
-			if(chains.getStateOfIntersection(x - 1, y).equals("free")) {
-				for(int k = 0; k < breaths.size(); k++) {
-					if(breaths.get(k).getX() == x - 1 && breaths.get(k).getY() == y)
+			if(manager.getIntersectionState(x - 1, y).equals("free")) {
+				for(int k = 0; k < liberties.size(); k++) {
+					if(liberties.get(k).getX() == x - 1 && liberties.get(k).getY() == y)
 						break;
-					if(k == breaths.size() - 1)
-						breaths.add(new Breath(x - 1, y));
+					if(k == liberties.size() - 1)
+						liberties.add(new Liberty(x - 1, y));
 					k++;
 				}
 			}
-			if(chains.getStateOfIntersection(x, y + 1).equals("free")) {
-				for(int k = 0; k < breaths.size(); k++) {
-					if(breaths.get(k).getX() == x && breaths.get(k).getY() == y + 1)
+			if(manager.getIntersectionState(x, y + 1).equals("free")) {
+				for(int k = 0; k < liberties.size(); k++) {
+					if(liberties.get(k).getX() == x && liberties.get(k).getY() == y + 1)
 						break;
-					if(k == breaths.size() - 1)
-						breaths.add(new Breath(x, y + 1));
+					if(k == liberties.size() - 1)
+						liberties.add(new Liberty(x, y + 1));
 					k++;
 				}
 			}
-			if(chains.getStateOfIntersection(x, y - 1).equals("free")) {
-				for(int k = 0; k < breaths.size(); k++) {
-					if(breaths.get(k).getX() == x && breaths.get(k).getY() == y - 1)
+			if(manager.getIntersectionState(x, y - 1).equals("free")) {
+				for(int k = 0; k < liberties.size(); k++) {
+					if(liberties.get(k).getX() == x && liberties.get(k).getY() == y - 1)
 						break;
-					if(k == breaths.size() - 1)
-						breaths.add(new Breath(x, y - 1));
+					if(k == liberties.size() - 1)
+						liberties.add(new Liberty(x, y - 1));
 					k++;
 				}
 			}
 		}
-		return breaths.size();
+		return liberties.size();
 	}
 	
 	public String getColor() {
@@ -89,5 +90,13 @@ public class Chain {
 	
 	public int numberOfElements() {
 		return listOfStones.size();
+	}
+	
+	public void setEyes(int i) {
+		this.eyes = i;
+	}
+	
+	public int getEyes() {
+		return this.eyes;
 	}
 }
