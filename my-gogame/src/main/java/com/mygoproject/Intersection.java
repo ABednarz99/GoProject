@@ -38,12 +38,4 @@ public class Intersection {
 		return this.state;
 	}
 	
-	public void setTerritory(String territory) {
-		this.territory = territory;
-	}
-	
-	public String getTerritory() {
-		return this.territory;
-	}
-	
 }
