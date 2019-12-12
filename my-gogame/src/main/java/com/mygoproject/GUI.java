@@ -30,6 +30,7 @@ public class GUI extends JFrame {
 	private JButton resume;
 	private JButton pause;
 	private BoardGUI boardGUI;
+	private JTextArea area;
 	
 	public GUI(ConnectorToGUI parent) {
 		
@@ -123,7 +124,7 @@ public class GUI extends JFrame {
 	    createButtonPanel();
 	    container.add(buttonPanel, BorderLayout.NORTH);
 	    
-	    JTextArea area = new JTextArea(15, 15);
+	    area = new JTextArea(15, 15);
 	    area.setEditable(false);
 	    area.setFont(new Font("Segoe Script", Font.BOLD, 15));
 	    area.setLineWrap(true);
@@ -143,6 +144,7 @@ public class GUI extends JFrame {
 	    
 	    pause.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+        		area.append("You gave up a turn\n");
             	parent.sendPause();
             	boardGUI.changeCurrentPlayer();
             	pause.setEnabled(false);
@@ -205,37 +207,56 @@ public class GUI extends JFrame {
 	}
 	
 	public boolean sendCoordinates(int x, int y, String color) {
-		return parent.sendCoordinates(x, y, color);
+		if(parent.sendCoordinates(x, y, color)) {
+			char fileChar = (char) ('A' + x);
+			area.append("Your stone was added on (" + String.valueOf(size - y) + ", " + String.valueOf(fileChar) + ")\n");
+			area.append("The opponent's turn\n");
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void addStoneToBoard(int x, int y) {
 		pause.setEnabled(true);
 		boardGUI.addStoneToBoard(x, y);
+		char fileChar = (char) ('A' + x);
+		area.append("An enemy stone was added on (" + String.valueOf(size - y) + ", " + String.valueOf(fileChar) + ")\n");
+		area.append("Your turn!\n");
 	}
 	
 	public void sendRect(int x, int y, String color) {
+		char fileChar = (char) ('A' + x);
+		area.append("Your rectangle was added on (" + String.valueOf(size - y) + ", " + String.valueOf(fileChar) + ")\n");
 		parent.sendRect(x, y, color);
 	}
 	
 	public void rect(int x, int y) {
+		char fileChar = (char) ('A' + x);
+		area.append("An enemy rectangle was added on (" + String.valueOf(size - y) + ", " + String.valueOf(fileChar) + ")\n");
 		boardGUI.addEnemyRect(x, y);
 	}
 	
-	public void deleteStones(int x, int y) {
-		boardGUI.deleteStones(x, y);
+	public void deleteStone(int x, int y) {
+		char fileChar = (char) ('A' + x);
+		area.append("A stone was deleted on (" + String.valueOf(size - y) + ", " + String.valueOf(fileChar) + ")\n");
+		boardGUI.deleteStone(x, y);
 	}
 	
 	public void pause() {
+		area.append("The opponent gave up a turn\n");
 		boardGUI.changeCurrentPlayer();
 	}
 	
 	public void resumedGame(boolean flag) {
 		resume.setEnabled(false);
+		area.append("Game resumed\n");
 		boardGUI.resumedGame(flag);
 	}
 	
 	public void pausedGame() {
 		resume.setEnabled(true);
+		area.append("Game stopped, mark your territory\n");
 		boardGUI.pausedGame();
 	}
 	

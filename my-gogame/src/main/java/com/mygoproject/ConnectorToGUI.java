@@ -32,8 +32,8 @@ public class ConnectorToGUI {
 		return false;
 	}
 	
-	public void deleteStones(int x, int y) { //informuje o usunietych kamieniach
-		gui.deleteStones(x, y);
+	public void deleteStone(int x, int y) { //informuje o usunietych kamieniach
+		gui.deleteStone(x, y);
 	}
 	
 	public void sendRect(int x, int y, String color) { //infomuje ze zaznaczyles punkt terytorium 

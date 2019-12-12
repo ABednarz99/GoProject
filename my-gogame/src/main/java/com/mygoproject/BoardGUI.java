@@ -182,7 +182,7 @@ public class BoardGUI extends JPanel {
 		repaint();
 	}
 	
-	public void deleteStones(int x, int y) {
+	public void deleteStone(int x, int y) {
 		intersections[y][x].setState(null);
 		repaint();
 	}
