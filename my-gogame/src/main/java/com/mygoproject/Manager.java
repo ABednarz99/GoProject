@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Manager {
 
+	private int size;
 	private Board board;
 	private ArrayList<Chain> chains;
 	
@@ -12,16 +13,23 @@ public class Manager {
 	String color = null;
 	
 	public Manager(int size) {
-		board = new Board(size);
-		chains = new ArrayList<Chain>();
+		this.size = size;
+		this.board = new Board(size);
+		this.chains = new ArrayList<Chain>();
 	}
-	
+	public int getSizeOfBoard() {
+		return this.size;
+	}
 	public String getIntersectionState(int x, int y) {
 		return board.getIntersectionState(x, y);
 	}
 	
 	public void changeIntersectionState(int x, int y, String state) {
 		board.changeIntersectionState(x, y, state);
+	}
+	
+	public ArrayList<Chain> getChains() {
+		return this.chains;
 	}
 	
 	public boolean checkConditionToAddStone(int x, int y, String color, int counter) {
@@ -102,7 +110,11 @@ public class Manager {
 		return false;
 	}
 	
-	public void addStoneToChain(int x, int y, String color) {
+	public boolean addStoneToChain(int x, int y, String color) {
+		
+		if(checkBlockedIntersection(x, y, color)) {
+			return false;
+		}
 		
 		int[] indexes = new int[4];
 		int counter = 0;
@@ -121,6 +133,7 @@ public class Manager {
 		if(counter == 0 && flag) {
 			board.changeIntersectionState(x, y, color);
 			chains.add(new Chain(this, color, x, y));
+			return true;
 		} else if(flag) {
 			for(int i = 1; i < counter - 1; i++) {
 				for(int k = 0; k < chains.get(indexes[i]).numberOfElements(); k++) {
@@ -130,8 +143,9 @@ public class Manager {
 				}
 				removeChain(indexes[i]);
 			}
+			return true;
 		} else {
-			// cos co kaze powtorzyc ruch
+			return false;
 		}
 	}
 	

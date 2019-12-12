@@ -24,12 +24,4 @@ public class Board {
 	public void changeIntersectionState(int x, int y, String state) {
 		this.intersections[x][y].changeState(state);
 	}
-	
-	public String getIntersectionTerritory(int x, int y) {
-		return this.intersections[x][y].getTerritory();
-	}
-	
-	public void setIntersectionTerritory(int x, int y, String territory) {
-		this.intersections[x][y].setTerritory(territory);
-	}
 }

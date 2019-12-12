@@ -2,13 +2,18 @@ package com.mygoproject;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.*;
 
@@ -16,6 +21,7 @@ public class GUI extends JFrame {
 	private int size;
 	private JButton player;
 	private JButton bot;
+	private BoardGUI boardGUI;
 	
 	public GUI() {
 		JDialog d = new JDialog(this, "The first step", true);
@@ -23,7 +29,7 @@ public class GUI extends JFrame {
 		JPanel panel = new JPanel(new BorderLayout());
 	    panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 	    
-	    panel.add(new JLabel("Wybierz godnego Tobie przeciwnika"), BorderLayout.NORTH);
+	    panel.add(new JLabel("Choose an opponent", JLabel.CENTER), BorderLayout.NORTH);
 	    
 	    JPanel choosingGrid = new JPanel(new FlowLayout());
 	    panel.add(choosingGrid, BorderLayout.CENTER);
@@ -83,7 +89,7 @@ public class GUI extends JFrame {
 		JPanel container = new JPanel();
 	    container.setBackground(Color.GRAY);
 	    container.setLayout(new BorderLayout());
-	    add(container);
+	    
 	    container.setBorder(new EmptyBorder(0, 20, 20, 20));
 
 	    JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -102,28 +108,53 @@ public class GUI extends JFrame {
             }
         });
 	    
-	    BoardGUI boardGUI = new BoardGUI();
+	    JButton surrender = new JButton("surrender");
+	    surrender.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	
+            }
+        });
+	    
+	    boardGUI = new BoardGUI();
 	    container.add(boardGUI, BorderLayout.CENTER);
 	    
 	    buttonPanel.add(pause);
 	    buttonPanel.add(resume);
+	    buttonPanel.add(surrender);
 	    container.add(buttonPanel, BorderLayout.NORTH);
-
-	    d.setContentPane(panel);
-	    d.pack();
-	    d.setSize(300, 200);
+	    
+	    JTextArea area = new JTextArea(15, 15);
+	    area.setEditable(false);
+	    area.setFont(new Font("Segoe Script", Font.BOLD, 15));
+	    area.setLineWrap(true);
+	    area.setText("The course of the game:\n");
+	    JScrollPane scroll = new JScrollPane(area, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	    container.add(scroll, BorderLayout.EAST);
+	    
+	    add(container);
+	    setResizable(false);
+		
+	    d.add(panel);
+	    d.setSize(300, 170);
 	    d.setLocationRelativeTo(null);
 	    d.setVisible(true);
-	    boardGUI.initially(size);
-	    pack();
-	    setResizable(false);
-	    setLocationRelativeTo(null);
 	}
 	
 	public void action(String name) {
-		if(name.equals("player") || name.equals("bot")) {
+		if(name.equals("bot")) {
 			dispose();
-        	setVisible(true);
+			boardGUI.initially(size);
+			pack();
+			setLocationRelativeTo(null);
+			setVisible(true);
+		} else if(name.equals("player")) {
+			dispose();
+			JDialog dialog = new JDialog(this, "Information", true);
+			dialog.setContentPane(new JLabel("Waiting for the other player...", JLabel.CENTER));
+			dialog.pack();
+		    dialog.setSize(300, 200);
+		    dialog.setLocationRelativeTo(null);
+			dialog.setVisible(true);
 		} else {
 			player.setEnabled(true);
 			bot.setEnabled(true);

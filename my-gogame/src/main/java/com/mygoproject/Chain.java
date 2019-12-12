@@ -91,12 +91,4 @@ public class Chain {
 	public int numberOfElements() {
 		return listOfStones.size();
 	}
-	
-	public void setEyes(int i) {
-		this.eyes = i;
-	}
-	
-	public int getEyes() {
-		return this.eyes;
-	}
 }

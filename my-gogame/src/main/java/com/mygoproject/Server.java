@@ -4,7 +4,7 @@ package com.mygoproject;
 public class Server 
 {
 	public Server(int size) {
-		Manager manager = new Manager(size);
+		new Manager(size);
 		createSocket();
 	}
 	
@@ -20,6 +20,6 @@ public class Server
     	} catch(NumberFormatException e) {
     		System.out.println("Wrong argument");
     	}
-    	Server server = new Server(size);
+    	new Server(size);
     }
 }
