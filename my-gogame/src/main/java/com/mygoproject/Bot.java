@@ -1,144 +1,203 @@
 package com.mygoproject;
 
-import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Bot {
 	
-	private Manager manager;
-	private ArrayList<Chain> chains;
-	private String color = "white";
-	
-	public Bot(Manager manager) {
-		this.manager = manager;
-		this.chains = manager.getChains();
+	private int boardSize;
+
+	Player opponent;
+    Manager gameManager;
+    String color;
+
+	public Bot(String color) {
+		this.color = color;
 	}
+
+    private boolean processMoveCommand(int x, int y) { 
+    	if(gameManager.addStoneToChain(x, y, this.color)) {
+    		if(gameManager.isIntersectionBlocked(this.color)) {
+    			gameManager.deleteIntersectionBlockade();
+            }
+    		opponent.output.println("OPPONENT_MOVED " + x + " " + y);
+    		return true;
+        }
+    	return false;
+    }
 	
 	public void action() {
+		try {
+			TimeUnit.SECONDS.sleep(2);
+    	} catch(InterruptedException ex) {
+    	    Thread.currentThread().interrupt();
+    	}
 		while(true) {
-			//sprawdza łancuch z najmniejsza iloscia oddechow
-			int a = 0; //liczba oddechow
-			int p = -1; //indeks lancucha
-			for(int i = 0; i < chains.size(); i++) {
-				if(!(chains.get(i).getColor().equals(color))) {
-					if(p == -1) {
-						a = chains.get(i).countLiberties();
-						p = i;
-					}
-					if(chains.get(i).countLiberties() < a) {
-						a = chains.get(i).countLiberties();
-						p = i;
-					}
-				}
-			}
-		
-			//sprawdza swoj wlasny lancuch z najmniejsza iloscia oddechow
-			int b = 0;
-			int q = -1;
-			for(int i = 0; i < chains.size(); i++) {
-				if(chains.get(i).getColor().equals(color)) {
-					if(q == -1) {
-						b = chains.get(i).countLiberties();
-						q = i;
-					}
-					if(chains.get(i).countLiberties() < b) {
-						b = chains.get(i).countLiberties();
-						q = i;
+				//sprawdza łancuch z najmniejsza iloscia oddechow
+				int a = 0; //liczba oddechow
+				int p = -1; //indeks lancucha
+				for(int i = 0; i < getSizeOfChains(); i++) {
+					if(!(getColorOfChain(i).equals(color))) {
+						if(p == -1) {
+							a = getCountLiberties(i);
+							p = i;
+						}
+						if(getCountLiberties(i) < a) {
+							a = getCountLiberties(i);
+							p = i;
+						}
 					}
 				}
-			}
-		
-			if(p == -1 && q == -1) { //bot rozpoczyna gre, sytuacja gdy gracz spasowal na poczatku gry
-				if(randomChoice()) {
-					continue;
-				}
-			}
 			
-			if(a == 1) { //zabija lancuch wroga
-				if(searchFreeSpace(p)) {
-					continue;
+				//sprawdza swoj wlasny lancuch z najmniejsza iloscia oddechow
+				int b = 0;
+				int q = -1;
+				for(int i = 0; i < getSizeOfChains(); i++) {
+					if(getColorOfChain(i).equals(color)) {
+						if(q == -1) {
+							b = getCountLiberties(i);
+							q = i;
+						}
+						if(getCountLiberties(i) < b) {
+							b = getCountLiberties(i);
+							q = i;
+						}
+					}
 				}
-			}
-			
-			if(b == 1) { //probuje ratowac swoj lancuch
-				if(searchFreeSpace(q)) {
-					continue;
+				
+				if(a == 1) { //zabija lancuch wroga
+					if(searchFreeSpace(p)) {
+						break;
+					}
 				}
-			}
-			
-			Random r = new Random(); //gdy zadne z powyzszych to losuje czy powiekszac swoj lancuch, czy gdziekolwiek, czy kolo wroga
-			int x = r.nextInt(4);
-			if(x == 1) {
-				if(searchFreeSpace(q)) {
-					continue;
+				
+				if(b == 1) { //probuje ratowac swoj lancuch
+					if(searchFreeSpace(q)) {
+						break;
+					}
 				}
-			} else if(x == 2) {
-				if(randomChoice()) {
-					continue;
+				
+				Random r = new Random(); //gdy zadne z powyzszych to losuje czy powiekszac swoj lancuch, czy gdziekolwiek, czy kolo wroga
+				int x = r.nextInt(4);
+				if(x == 1 && q != -1) {
+					if(searchFreeSpace(q)) {
+						break;
+					}
+				} else if(x == 2) {
+					if(randomChoice()) {
+						break;
+					}
+				} else if (p != -1){
+					if(searchFreeSpace(p)) {
+						break;
+					}
 				}
-			} else {
-				if(searchFreeSpace(p)) {
-					continue;
-				}
-			}
 		}
 	}
 	
 	public boolean randomChoice() {
-		int size = manager.getSizeOfBoard();
+		int size = gameManager.getSizeOfBoard();
 		Random r = new Random();
 		int x = r.nextInt(size);
 		int y = r.nextInt(size);
-		return manager.addStoneToChain(x, y, "white");
+		if(processMoveCommand(x, y)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public int countLiberties(int x, int y) {
 		int l = 0;
-		if(manager.getIntersectionState(x + 1, y).equals("free")) {
+		if(gameManager.getIntersectionState(x + 1, y).equals("FREE")) {
 			l++;
 		}
-		if(manager.getIntersectionState(x - 1, y).equals("free")) {
+		if(gameManager.getIntersectionState(x - 1, y).equals("FREE")) {
 			l++;
 		}
-		if(manager.getIntersectionState(x, y + 1).equals("free")) {
+		if(gameManager.getIntersectionState(x, y + 1).equals("FREE")) {
 			l++;
 		}
-		if(manager.getIntersectionState(x, y - 1).equals("free")) {
+		if(gameManager.getIntersectionState(x, y - 1).equals("FREE")) {
 			l++;
 		}
 		return l;
 	}
 	
 	public boolean searchFreeSpace(int a) {
-		for(int i = 0; i < chains.get(a).numberOfElements(); i++) {
+		for(int i = 0; i < getNumberOfElements(a); i++) {
 			int flag = 0;
-			int x = chains.get(a).getX(i);
-			int y = chains.get(a).getY(i);
-			if(chains.get(a).getColor().equals("black")) {
+			int x = getX(a, i);
+			int y = getY(a, i);
+			if(getColorOfChain(a).equals("BLACK")) {
 				flag = 1; //gdy chcemy postawic kamien obok wroga, poniższe warunki z oddechami nie obowiazuja
 			}
-			if(manager.getIntersectionState(x + 1, y).equals("free")) {
+			if(gameManager.getIntersectionState(x + 1, y).equals("FREE")) {
 				if(countLiberties(x + 1, y) > 2 || flag == 1) { // dodajac kamien ginie jeden oddech, wiec lancuch nadal bedzie mial tylko jeden oddech
-					return manager.addStoneToChain(x + 1, y, "white");
+					return processMoveCommand(x + 1, y);
 				}
 			}
-			if(manager.getIntersectionState(x - 1, y).equals("free")) {
+			if(gameManager.getIntersectionState(x - 1, y).equals("FREE")) {
 				if(countLiberties(x - 1, y) > 2 || flag == 1) {
-					return manager.addStoneToChain(x - 1, y, "white");
+					return processMoveCommand(x - 1, y);
 				}
 			}
-			if(manager.getIntersectionState(x, y + 1).equals("free")) {
+			if(gameManager.getIntersectionState(x, y + 1).equals("FREE")) {
 				if(countLiberties(x, y + 1) > 2 || flag == 1) {
-					return manager.addStoneToChain(x, y + 1, "white");
+					return processMoveCommand(x, y + 1);
 				}
 			}
-			if(manager.getIntersectionState(x, y - 1).equals("free")) {
+			if(gameManager.getIntersectionState(x, y - 1).equals("FREE")) {
 				if(countLiberties(x, y - 1) > 2 || flag == 1) {
-					return manager.addStoneToChain(x, y - 1, "white");
+					return processMoveCommand(x, y - 1);
 				}
 			}
 			
 		}
 		return false;
 	}
+
+    public void setGameManager(Manager gameManager) {
+        this.gameManager = gameManager;
+    }
+
+    public Player getOpponent() {
+        return opponent;
+    }
+
+    public String getColor() {
+        return color;
+    }
+    
+    public void setBoardSize(int size) {
+        this.boardSize = size;
+    }
+    
+    public int getBoardSize() {
+        return boardSize;
+    }
+    
+    public int getSizeOfChains() {
+    	return gameManager.getSizeOfChains();
+    }
+    
+    public String getColorOfChain(int index) {
+    	return gameManager.getColorOfChain(index);
+    }
+    
+    public int getCountLiberties(int index) {
+    	return gameManager.getCountLiberties(index);
+    }
+    
+    public int getNumberOfElements(int index) {
+    	return gameManager.getNumberOfElements(index);
+    }
+    
+    public int getX(int a, int i) {
+    	return gameManager.getX(a, i);
+    }
+    
+    public int getY(int a, int i) {
+    	return gameManager.getY(a, i);
+    }
 }
