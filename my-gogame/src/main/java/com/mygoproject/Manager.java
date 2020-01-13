@@ -7,6 +7,8 @@ public class Manager {
 
     private int size;
     private Board board;
+    private int id;
+    private int numberMove = 0;
     private ArrayList<Chain> chains;
     private Player currentPlayer;
     private int vBot = 0;
@@ -16,11 +18,12 @@ public class Manager {
     int y = -1;
     String color = null;
 
-    public Manager(int size, int flag) {
+    public Manager(int size, int flag, int id) {
         this.size = size;
         this.board = new Board(size);
         this.chains = new ArrayList<Chain>();
         this.vBot = flag;
+        this.id = id;
     }
 
     public void setPlayer(Player player) {
@@ -68,6 +71,18 @@ public class Manager {
     
     public int getY(int a, int i) {
     	return chains.get(a).getY(i);
+    }
+    
+    public void addMoveToDB(int x, int y, String color, int flag) {
+    	numberMove++;
+    	int position = y + x * size;
+    	char charPlayer;
+    	if(flag == 0) {
+    		charPlayer = color.charAt(0);
+    	} else {
+    		charPlayer = color.charAt(1);
+    	}
+    	DatabaseConnector.insertMove(id, numberMove, position, charPlayer);
     }
 
     public boolean checkConditionToAddStone(int x, int y, String color, int counter) {
@@ -213,6 +228,7 @@ public class Manager {
 
         if(counter == 0 && flag) {
             board.changeIntersectionState(x, y, color);
+            addMoveToDB(x, y, color, 0);
 
             // searching for zero liberties and removing them
             findZeroLiberties();
@@ -244,6 +260,7 @@ public class Manager {
             }
             temp.addStone(x, y);
             board.changeIntersectionState(x, y, color);
+            addMoveToDB(x, y, color, 0);
 
             // searching for zero liberties and removing them
             findZeroLiberties();
@@ -294,9 +311,11 @@ public class Manager {
 
     public void removeChain(int index) {
         for(int i = 0; i < chains.get(index).numberOfElements(); i++) {
+        	String color = chains.get(index).getColor();
             int a = chains.get(index).getX(i);
             int b = chains.get(index).getY(i);
             board.changeIntersectionState(a, b, "FREE");
+            addMoveToDB(a, b, color, 1);
         }
         chains.remove(index);
     }

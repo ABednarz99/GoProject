@@ -146,7 +146,7 @@ public class BoardGUI extends JPanel {
     }
 
     public void initially(final int size) {
-
+    	
         JPanel xCoordinates = new JPanel(new GridLayout(1, 0));
         xCoordinates.setBackground(Color.ORANGE);
         xCoordinates.add(new JLabel(""));
@@ -193,9 +193,10 @@ public class BoardGUI extends JPanel {
                 intersections[i][k] = new IntersectionGUI();
             }
         }
-
-
-        this.addMouseListener(new MouseAdapter() {
+    }
+    
+    public void addMouseListener() {
+    	this.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
                 int row = Math.round((float) (e.getY() - tileSize)
                         / tileSize);
@@ -269,7 +270,6 @@ public class BoardGUI extends JPanel {
                 }
             }
     	}
-    	repaint();
     }
     
     public void setPausedMode(int i) {

@@ -26,11 +26,25 @@ public class GameClient {
         gui = new GUI(out);
         play();
     }
+    
+    public GameClient(GUI gui) throws Exception {
+        socket = new Socket("localhost", serverPort);
+        in = new Scanner(socket.getInputStream());
+        out = new PrintWriter(socket.getOutputStream(), true);
+
+        this.gui = new GUI(out, gui);
+        play();
+    }
 
     public void play() throws Exception {
         try {
             // Waiting for response from server
             String response = in.nextLine();
+            if(response.charAt(0) == 'E') {
+            	socket.close();
+            	return;
+            }
+            	
             char mark = response.charAt(8);
             char opponentMark = mark == 'B' ? 'W' : 'B';
             if(response.charAt(13) == '1') {
@@ -130,12 +144,10 @@ public class GameClient {
                     	myCapturedStones++;
                     }
                     gui.remove(x, y);
-
-                } else if (response.startsWith("VICTORY")) {
-                    gui.addMessage("You won!");
-                    break;
                 } else if (response.startsWith("DEFEAT")) {
                     gui.addMessage("You lost!");
+                    Thread.sleep(2000);
+                    createNewPlayer(gui);
                     break;
                 } else if (response.startsWith("OTHER_PLAYER_LEFT")) {
                     gui.addMessage(response);
@@ -169,38 +181,50 @@ public class GameClient {
                 	if(vBot) {
                 		gui.builtFinishingDialog(opponentCapturedStones, myCapturedStones, mark, opponentMark);
                 		response = in.nextLine();
+                		createNewPlayer(gui);
                 		break;
                 	} else {
 	                	iCount = 1;
 	                	if(oppCounts == 1) {
 	                		gui.builtFinishingDialog(opponentCapturedStones, myCapturedStones, mark, opponentMark);
-	                	response = in.nextLine();
-	                	if(!(response.startsWith("FAIL"))) 
-	                		break;
+	                		response = in.nextLine();
+	                		if(!(response.startsWith("FAIL"))) {
+	                			createNewPlayer(gui);
+	                			break;
+	                		}
 	                	}
                 	}
                 } else if (response.startsWith("OPPONENT COUNTS SCORES")) {
                 	oppCounts = 1;
                 	if(iCount == 1) {
                 		gui.builtFinishingDialog(opponentCapturedStones, myCapturedStones, mark, opponentMark);
-                	response = in.nextLine();
-                	if(!(response.startsWith("FAIL"))) 
-                		break;
+                		response = in.nextLine();
+                		if(!(response.startsWith("FAIL"))) {
+                			createNewPlayer(gui);
+                			break;
+                		}	
                 	} else {
                 		gui.addMessage("Opponent want to count the scores");
                 	}
                 } else if (response.startsWith("OPPONENT SURRENDERED")) {
                     gui.addMessage(response);
                     gui.addMessage("You won!");
+                    Thread.sleep(2000);
+                    createNewPlayer(gui);
                     break;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            socket.close();
+            socket.close(); 
             gui.dispose();
+            
         }
+    }
+    
+    public void createNewPlayer(GUI gui) throws Exception {
+    	new GameClient(gui);
     }
 
     public static void main(String[] args) throws Exception {
