@@ -29,7 +29,7 @@ public class Game {
     
 
     @Column(name="date")
-    private Date date;
+    private String date;
     
     @Column(name="size")
     private int size;
@@ -37,7 +37,7 @@ public class Game {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "game", orphanRemoval = true)
     private List<Move> moves;
 	
-    public Game(int size, Date date) {
+    public Game(int size, String date) {
 		super();
 		this.size = size;
 		this.date = date;
@@ -63,11 +63,11 @@ public class Game {
 		this.size = size;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 	
@@ -85,10 +85,6 @@ public class Game {
 	
 	public String getSizeStr() {
 		return Integer.toString(size);
-	}
-	
-	public String getDateStr() {
-		return date.toString();
 	}
 }
 

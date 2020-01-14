@@ -1,9 +1,8 @@
 package com.mygoproject;
 
-import java.sql.Date;
 import java.util.List;
-import java.text.DateFormat;  
-import java.text.SimpleDateFormat;  
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,7 +19,11 @@ public class DatabaseConnector {
          
         Game game = new Game();
         game.setSize(size);
-        game.setDate(new Date(System.currentTimeMillis()));
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formatDateTime = now.format(formatter);
+        game.setDate(formatDateTime);
+        
          
         session.save(game);
         session.getTransaction().commit();

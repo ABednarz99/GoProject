@@ -19,9 +19,6 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.text.DateFormat;  
-import java.text.SimpleDateFormat; 
-
 public class GUI extends JFrame {
     private int size;
     private int i = 0;
@@ -173,7 +170,7 @@ public class GUI extends JFrame {
             name += " Size of the board: ";
             name += games.get(i).getSizeStr();
             name += " Date: ";;  
-            name += games.get(i).getDateStr();
+            name += games.get(i).getDate().substring(0, 19);
         	JButton play = new JButton(name);
         	final int k = i;
 	        play.addActionListener(new ActionListener() {
@@ -304,12 +301,26 @@ public class GUI extends JFrame {
     	}
     	boardGUI.initially(size);
     	final JButton next = new JButton("Next move");
+    	if(pointX.size() == 0)
+    		next.setEnabled(false);
     	next.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	nextMove(pointX.get(i), pointY.get(i), marks.get(i));
-            	i++;
-            	if(i == pointX.size()) {
-            		next.setEnabled(false);
+            	if(marks.get(i) == 'L' || marks.get(i) == 'H') {
+            		int p = 0;
+            		while(marks.get(i) == 'L' || marks.get(i) == 'H') {
+            			i++;
+            			p++;
+            		}
+            		while(p > 0) {
+            			nextMove(pointX.get(i - p), pointY.get(i - p), marks.get(i - p));
+            			p--;
+            		}
+            	} else {
+	            	nextMove(pointX.get(i), pointY.get(i), marks.get(i));
+	            	i++;
+	            	if(i == pointX.size()) {
+	            		next.setEnabled(false);
+	            	}
             	}
             }
         });
